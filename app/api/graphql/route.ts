@@ -1,14 +1,14 @@
+export const runtime = 'nodejs';
+
 import { ApolloServer } from '@apollo/server';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Context'imizin nasıl görüneceğini tanımlıyoruz
 export interface MyContext {
   req?: NextRequest;
 }
 
-// Sunucuyu bu context tipiyle oluşturuyoruz
 const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,
@@ -17,13 +17,11 @@ const server = new ApolloServer<MyContext>({
 async function handler(req: NextRequest) {
   const body = await req.json();
 
-  // executeOperation'da context gönderilmiyor
   const response = await server.executeOperation(
     {
       query: body.query,
       variables: body.variables,
-    },
-    // Context artık burada değil!
+    }
   );
 
   if (response.body.kind === 'single') {
