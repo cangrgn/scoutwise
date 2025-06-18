@@ -15,14 +15,27 @@ const server = new ApolloServer<MyContext>({
 });
 
 async function handler(req: NextRequest) {
-  const body = await req.json();
+  let body: any = {};
+  try {
+    body = await req.json();
+  } catch (e) {
+    return NextResponse.json(
+      { error: 'Request body must be valid JSON.' },
+      { status: 400 }
+    );
+  }
 
-  const response = await server.executeOperation(
-    {
-      query: body.query,
-      variables: body.variables,
-    }
-  );
+  if (!body.query) {
+    return NextResponse.json(
+      { error: 'No GraphQL query provided.' },
+      { status: 400 }
+    );
+  }
+
+  const response = await server.executeOperation({
+    query: body.query,
+    variables: body.variables,
+  });
 
   if (response.body.kind === 'single') {
     return NextResponse.json(response.body.singleResult, { status: 200 });
