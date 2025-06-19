@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,12 +15,50 @@ datasource db {
 }
 
 model Player {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  club        String
-  position    String
-  age         Int
-  marketValue Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  club      String
+  position  String
+  age       Int
+  marketValue Int    @default(0)
+  
+  // === SCORING ===
+  goals             Float @default(0.0) // Non-penalty goals
+  penaltiesScored   Float @default(0.0)
+  expectedGoals     Float @default(0.0) // npxG (non-penalty xG)
+  shotsTotal        Float @default(0.0)
+  shotsOnTarget     Float @default(0.0)
+  shotAccuracyPct   Float @default(0.0) // shotsOnTarget / shotsTotal
+
+  // === PLAYMAKING ===
+  assists           Float @default(0.0)
+  expectedAssists   Float @default(0.0) // xA
+  keyPasses         Float @default(0.0) // Shot-creating actions
+  passesIntoFinalThird Float @default(0.0)
+  progressivePasses Float @default(0.0)
+  crosses           Float @default(0.0)
+
+  // === POSSESSION & DRIBBLING ===
+  successfulDribbles  Float @default(0.0)
+  dribbleSuccessPct   Float @default(0.0)
+  progressiveCarries  Float @default(0.0) // Topu ileri taşıma
+  touchesInBox        Float @default(0.0) // Ceza sahasında topla buluşma
+  miscontrols         Float @default(0.0) // Top kontrol hataları
+  
+  // === DEFENDING ===
+  tacklesWon          Float @default(0.0)
+  interceptions       Float @default(0.0)
+  blocks              Float @default(0.0)
+  clearances          Float @default(0.0)
+  aerialDuelsWonPct   Float @default(0.0) // Hava topu kazanma yüzdesi
+
+  // === PRESSING ===
+  successfulPressures   Float @default(0.0)
+  pressureRegains       Float @default(0.0) // Pres sonrası top kazanma
+  pressuresInAttThird   Float @default(0.0) // İleride yapılan pres sayısı
+
+  // === META ===
+  minutesPlayed     Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

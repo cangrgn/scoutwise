@@ -10,6 +10,32 @@ type CreatePlayerInput = {
   position: string;
   age: number;
   marketValue: number;
+  goals?: number;
+  penaltiesScored?: number;
+  expectedGoals?: number;
+  shotsTotal?: number;
+  shotsOnTarget?: number;
+  shotAccuracyPct?: number;
+  assists?: number;
+  expectedAssists?: number;
+  keyPasses?: number;
+  passesIntoFinalThird?: number;
+  progressivePasses?: number;
+  crosses?: number;
+  successfulDribbles?: number;
+  dribbleSuccessPct?: number;
+  progressiveCarries?: number;
+  touchesInBox?: number;
+  miscontrols?: number;
+  tacklesWon?: number;
+  interceptions?: number;
+  blocks?: number;
+  clearances?: number;
+  aerialDuelsWonPct?: number;
+  successfulPressures?: number;
+  pressureRegains?: number;
+  pressuresInAttThird?: number;
+  minutesPlayed?: number;
 }
 
 export const resolvers = {
@@ -24,15 +50,10 @@ export const resolvers = {
     },
   },
   Mutation: {
-    createPlayer: async (_: ResolverContext, input: CreatePlayerInput) => {
-      const { name, club, position, age, marketValue } = input;
+    createPlayer: async (_: ResolverContext, { input }: { input: CreatePlayerInput }) => {
       return await prisma.player.create({
         data: {
-          name,
-          club,
-          position,
-          age,
-          marketValue,
+          ...input,
         },
       });
     },
