@@ -7,7 +7,7 @@ export const typeDefs = gql`
     club: String!
     position: String!
     age: Int!
-    marketValue: Int!
+    marketValue: Float!
     createdAt: String!
     updatedAt: String!
   }
@@ -15,5 +15,15 @@ export const typeDefs = gql`
   type Query {
     players: [Player!]!
     player(id: Int!): Player
+  }
+
+  type Mutation {
+    createPlayer(
+      name: String!
+      club: String!
+      position: String!
+      age: Int!
+      marketValue: Float!
+    ): Player!
   }
 `; 
