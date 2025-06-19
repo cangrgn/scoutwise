@@ -1,61 +1,42 @@
 import prisma from '@/lib/prisma';
 
-type ResolverContext = {
-  _: any;
-}
+// Her bir oyuncu objesini temizlemek için tek ve basit bir fonksiyon
+const cleanPlayer = (player: any) => {
+  if (!player) return null;
 
-type CreatePlayerInput = {
-  name: string;
-  club: string;
-  position: string;
-  age: number;
-  marketValue: number;
-  goals?: number;
-  penaltiesScored?: number;
-  expectedGoals?: number;
-  shotsTotal?: number;
-  shotsOnTarget?: number;
-  shotAccuracyPct?: number;
-  assists?: number;
-  expectedAssists?: number;
-  keyPasses?: number;
-  passesIntoFinalThird?: number;
-  progressivePasses?: number;
-  crosses?: number;
-  successfulDribbles?: number;
-  dribbleSuccessPct?: number;
-  progressiveCarries?: number;
-  touchesInBox?: number;
-  miscontrols?: number;
-  tacklesWon?: number;
-  interceptions?: number;
-  blocks?: number;
-  clearances?: number;
-  aerialDuelsWonPct?: number;
-  successfulPressures?: number;
-  pressureRegains?: number;
-  pressuresInAttThird?: number;
-  minutesPlayed?: number;
-}
+  // Tüm sayısal/float alanlar için null kontrolü yap ve 0 ata
+  const numericFields = [
+    'goals', 'penaltiesScored', 'expectedGoals', 'shotsTotal',
+    'shotsOnTarget', 'shotAccuracyPct', 'assists', 'expectedAssists',
+    'keyPasses', 'passesIntoFinalThird', 'progressivePasses', 'crosses',
+    'successfulDribbles', 'dribbleSuccessPct', 'progressiveCarries',
+    'touchesInBox', 'miscontrols', 'tacklesWon', 'interceptions',
+    'blocks', 'clearances', 'aerialDuelsWonPct', 'successfulPressures',
+    'pressureRegains', 'pressuresInAttThird', 'minutesPlayed', 'marketValue', 'age'
+  ];
+
+  for (const field of numericFields) {
+    if (player[field] === null || player[field] === undefined) {
+      player[field] = 0;
+    }
+  }
+
+  return player;
+};
 
 export const resolvers = {
   Query: {
     players: async () => {
-      return await prisma.player.findMany();
+      const dbPlayers = await prisma.player.findMany();
+      // Her bir oyuncuyu temizle
+      return dbPlayers.map(cleanPlayer);
     },
-    player: async (_: ResolverContext, { id }: { id: number }) => {
-      return await prisma.player.findUnique({
-        where: { id },
+    player: async (_: any, { id }: { id: string }) => {
+      const dbPlayer = await prisma.player.findUnique({
+        where: { id: parseInt(id) },
       });
+      // Tek oyuncuyu temizle
+      return cleanPlayer(dbPlayer);
     },
   },
-  Mutation: {
-    createPlayer: async (_: ResolverContext, { input }: { input: CreatePlayerInput }) => {
-      return await prisma.player.create({
-        data: {
-          ...input,
-        },
-      });
-    },
-  },
-}; 
+};
